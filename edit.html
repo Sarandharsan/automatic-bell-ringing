@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bell - Edit Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* overflow: hidden;  REMOVED to allow potential scrolling, but ideally we avoid it */
+            color: #ecf0f1;
+        }
+
+        #vanta-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto; /* Added some top/bottom margin */
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-sizing: border-box; /* Important: Include padding and border in the element's total width and height */
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .schedule-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .period-row, .break-row {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: #ecf0f1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+            animation-delay: calc(0.1s * var(--order));
+            backdrop-filter: blur(5px);
+            box-sizing: border-box; /* Include padding and border in the total width */
+        }
+
+        .period-row:hover, .break-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .period-label, .break-label {
+            min-width: 120px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .time-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time-input {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            width: 100px;
+            font-size: 1em;
+            background: white;
+            color: #2c3e50;
+            box-sizing: border-box; /* Include padding and border in the total width */
+        }
+
+        .time-input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .to-text {
+            font-weight: 500;
+        }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: #27ae60;
+        }
+
+        .back-btn {
+            background: #7f8c8d;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            filter: brightness(110%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .period-row:nth-child(1), .break-row:nth-child(1) { --order: 1; }
+        .period-row:nth-child(2), .break-row:nth-child(2) { --order: 2; }
+        .period-row:nth-child(3), .break-row:nth-child(3) { --order: 3; }
+        .period-row:nth-child(4), .break-row:nth-child(4) { --order: 4; }
+        .period-row:nth-child(5), .break-row:nth-child(5) { --order: 5; }
+        .period-row:nth-child(6), .break-row:nth-child(6) { --order: 6; }
+        .period-row:nth-child(7), .break-row:nth-child(7) { --order: 7; }
+        .period-row:nth-child(8), .break-row:nth-child(8) { --order: 8; }
+        .period-row:nth-child(9), .break-row:nth-child(9) { --order: 9; }
+        .period-row:nth-child(10), .break-row:nth-child(10) { --order: 10; }
+        .period-row:nth-child(11) { --order: 11; }
+
+        /* Media Query for Smaller Screens */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%; /* Allow container to take up more width on smaller screens */
+                margin: 10px auto; /* Reduce margin */
+                padding: 10px; /* Reduce padding */
+            }
+
+            .title {
+                font-size: 2em; /* Slightly smaller title */
+                margin-bottom: 20px;
+            }
+
+            .period-label, .break-label {
+                min-width: 80px; /* Reduce label width */
+                font-size: 1em;
+            }
+
+            .time-input {
+                width: 80px; /* Smaller input fields */
+                font-size: 0.9em;
+            }
+
+            .button-container {
+                flex-direction: column; /* Stack buttons on smaller screens */
+                align-items: center; /* Center buttons */
+            }
+
+            .btn {
+                width: 80%; /* Make buttons wider */
+                margin: 5px 0; /* Adjust button margins */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Vanta.js Rings Background -->
+    <div id="vanta-background"></div>
+
+    <div class="container">
+        <h1 class="title">Bell Timing Editor</h1>
+        <div class="schedule-container">
+            <div class="period-row">
+                <span class="period-label">Period 1</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p1-start" value="07:40">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 2</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p2-start" value="08:30">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 3</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p3-start" value="09:20">
+                </div>
+            </div>
+            <div class="break-row">
+                <span class="break-label">Tea Break</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="tea-start" value="10:10">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 4</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p4-start" value="10:25">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 5</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p5-start" value="11:25">
+                </div>
+            </div>
+            <div class="break-row">
+                <span class="break-label">Lunch Break</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="lunch-start" value="12:20">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 6</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p6-start" value="12:55">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 7</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p7-start" value="13:30">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">Period 8</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="p8-start" value="14:10">
+                </div>
+            </div>
+            <div class="period-row">
+                <span class="period-label">College End</span>
+                <div class="time-container">
+                    <input type="time" class="time-input" id="end-time" value="14:45">
+                </div>
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="btn save-btn" id="save-btn">Save Changes</button>
+            <a href="index.html" class="btn back-btn">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Vanta.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+
+    <!-- MQTT.js Public Broker -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+    <!-- Initialize Vanta.js Rings -->
+    <script>
+        VANTA.RINGS({
+            el: "#vanta-background",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            backgroundColor: 0x40417
+        });
+    </script>
+
+    <!-- MQTT Client Script -->
+    <script>
+        // 1️⃣ Connect to Public Broker
+        const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+
+        client.on('connect', () => {
+            console.log('✅ Connected to EMQX MQTT Broker');
+        });
+
+        client.on('error', (err) => {
+            console.error('❌ MQTT Connection Error:', err);
+        });
+
+        // 2️⃣ Get timings from the page
+        function getScheduleData() {
+            return {
+                period1: document.getElementById('p1-start').value,
+                period2: document.getElementById('p2-start').value,
+                period3: document.getElementById('p3-start').value,
+                teaBreak: document.getElementById('tea-start').value,
+                period4: document.getElementById('p4-start').value,
+                period5: document.getElementById('p5-start').value,
+                lunchBreak: document.getElementById('lunch-start').value,
+                period6: document.getElementById('p6-start').value,
+                period7: document.getElementById('p7-start').value,
+                period8: document.getElementById('p8-start').value,
+                collegeEnd: document.getElementById('end-time').value
+            };
+        }
+
+        // 3️⃣ Send schedule data to ESP32 via MQTT
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const schedule = getScheduleData();
+            const scheduleJSON = JSON.stringify(schedule);
+
+            client.publish('bell/schedule', scheduleJSON);
+
+            console.log('⏰ Schedule Sent:', schedule);
+            alert('✅ Bell schedule sent to device!');
+        });
+    </script>
+</body>
+</html>

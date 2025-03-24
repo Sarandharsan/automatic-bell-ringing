@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bell Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #vanta-globe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            background: none;
+            border: none;
+            padding: 20px;
+            box-shadow: none;
+        }
+        .title, .dashboard, .controls {
+            text-align: center;
+        }
+        .time-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .squircle-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .squircle-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .progress-container {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-globe"></div>
+
+    <div class="container animate-load">
+        <h1 class="title">Auto Bell Control System</h1>
+        <div class="dashboard">
+            <div class="time-display">
+                <div class="squircle-box">
+                    <h2>Current Time</h2>
+                    <span id="current-time"></span>
+                </div>
+                <div class="squircle-box period-container">
+                    <h2 id="period-label">Current Period</h2>
+                    <span id="current-period"></span>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="period-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn emergency-btn hoverable" id="emergency-bell">Emergency Bell</button>
+            <a href="login.html?redirect=edit" class="btn edit-btn hoverable">Time Edit</a>
+            <a href="login.html?redirect=exam" class="btn exam-btn hoverable">Exam Timer</a>
+        </div>
+    </div>
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+
+    <script>
+        VANTA.GLOBE({
+            el: "#vanta-globe",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            size: 1.80
+        });
+    </script>
+
+    
+    <script src="script.js"></script>
+
+    
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        const mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+
+        mqttClient.on('connect', () => {
+            console.log('✅ Connected to MQTT broker');
+        });
+
+        document.getElementById('emergency-bell').addEventListener('click', () => {
+    mqttClient.publish('bell/emergency', 'ring');
+    alert('🚨 Emergency bell signal sent!');
+});
+
+    </script>
+</body>
+</html>

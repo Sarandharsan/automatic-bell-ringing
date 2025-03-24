@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Bell - Exam Timer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #e0e1dd;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        #vanta-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure background is behind content */
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(27, 38, 59, 0.9);
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+            position: relative; /* Ensure content is above the background */
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .current-time {
+            font-size: 2.2em;
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .exam-display {
+            background: rgba(14, 20, 31, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .squircle-box {
+            background: #1b263b;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 0 auto 20px auto;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .squircle-box span {
+            font-size: 2.2em;
+            color: #00ffff;
+        }
+
+        .progress-container {
+            width: 80%;
+            margin: 10px auto 0;
+            background: #0d1b2a;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #00ffff;
+            width: 0%; /* Default to 0% when no exam */
+            transition: width 1s linear;
+        }
+
+        .time-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .time-inputs label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #e0e1dd;
+            font-size: 1.2em;
+        }
+
+        .time-inputs input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            background: #1b263b;
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            font-size: 1.2em;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .time-inputs input[type="number"]:focus {
+            border-color: #98ff98;
+            outline: none;
+        }
+
+        .quick-timer {
+            margin: 20px 0;
+        }
+
+        .quick-timer button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #00ffff;
+            color: #0d1b2a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .quick-timer button:hover {
+            background: #98ff98;
+            transform: scale(1.1);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #00ffff;
+            color: #0d1b2a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #98ff98;
+            transform: scale(1.1);
+        }
+
+        .start-exam-btn {
+            background: #00ffff;
+        }
+
+        .back-btn {
+            background: #7f8c8d;
+        }
+
+        .start-exam-btn:hover {
+            background: #98ff98;
+        }
+
+        .back-btn:hover {
+            background: #98ff98;
+        }
+    </style>
+</head>
+<body>
+    <!-- Vanta.js Trunk Background -->
+    <div id="vanta-background"></div>
+
+    <div class="container">
+        <span class="current-time" id="current-time"></span>
+        <h1 class="title">Exam Timer</h1>
+        <div class="exam-display">
+            <div class="squircle-box">
+                <span id="exam-timer">00:00:00</span>
+                <div class="progress-container">
+                    <div class="progress-bar" id="exam-progress"></div>
+                </div>
+            </div>
+            <div class="time-inputs">
+                <label>Hours<br><input type="number" id="exam-hours" min="0" max="23" value="0"></label>
+                <label>Minutes<br><input type="number" id="exam-minutes" min="0" max="59" value="0"></label>
+                <label>Seconds<br><input type="number" id="exam-seconds" min="0" max="59" value="0"></label>
+            </div>
+            <div class="quick-timer">
+                <button id="three-hour-timer">3 Hour Exam</button>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn start-exam-btn">Start Exam</button>
+            <a href="index.html" class="btn back-btn">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Vanta.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.trunk.min.js"></script>
+
+    <!-- Initialize Vanta.js Trunk -->
+    <script>
+        VANTA.TRUNK({
+            el: "#vanta-background",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0xffffff,
+            backgroundColor: 0xc233c,
+            spacing: 6.50,
+            chaos: 3.50
+        });
+    </script>
+    <script src="script.js"></script>
+
+    <!-- MQTT Client Scripts -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        const mqttServer = "wss://broker.emqx.io:8084/mqtt";
+        const topicSchedule = "bell/schedule";
+
+        // Create MQTT client
+        const client = mqtt.connect(mqttServer);
+
+        client.on("connect", () => {
+            console.log("✅ Connected to MQTT Broker");
+        });
+
+        client.on("error", (err) => {
+            console.error("❌ MQTT Connection Error:", err);
+        });
+
+        // Helper: publish message to schedule topic
+        function sendSchedule(timeString) {
+            client.publish(topicSchedule, timeString, (err) => {
+                if (err) {
+                    console.error("❌ Failed to publish:", err);
+                } else {
+                    console.log(`📢 Sent to ${topicSchedule}: ${timeString}`);
+                }
+            });
+        }
+
+        // Send time when clicking "Start Exam"
+        document.querySelector(".start-exam-btn").addEventListener("click", () => {
+            const hours = document.getElementById("exam-hours").value.padStart(2, '0');
+            const minutes = document.getElementById("exam-minutes").value.padStart(2, '0');
+            const seconds = document.getElementById("exam-seconds").value.padStart(2, '0');
+
+            const now = new Date();
+            now.setHours(now.getHours() + parseInt(hours));
+            now.setMinutes(now.getMinutes() + parseInt(minutes));
+            now.setSeconds(now.getSeconds() + parseInt(seconds));
+
+            const targetHour = now.getHours().toString().padStart(2, '0');
+            const targetMinute = now.getMinutes().toString().padStart(2, '0');
+
+            const scheduledTime = `${targetHour}:${targetMinute}`;
+
+            sendSchedule(scheduledTime);
+            alert(`⏰ Bell scheduled at ${scheduledTime}`);
+        });
+
+        // Send 3-hour exam schedule when clicking "3 Hour Exam"
+        document.getElementById("three-hour-timer").addEventListener("click", () => {
+            const now = new Date();
+            now.setHours(now.getHours() + 3);
+
+            const targetHour = now.getHours().toString().padStart(2, '0');
+            const targetMinute = now.getMinutes().toString().padStart(2, '0');
+
+            const scheduledTime = `${targetHour}:${targetMinute}`;
+
+            sendSchedule(scheduledTime);
+            alert(`⏰ Bell scheduled after 3 hours at ${scheduledTime}`);
+        });
+    </script>
+</body>
+</html>

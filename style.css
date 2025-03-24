@@ -1,0 +1,172 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0d1b2a, #1b263b);
+    color: #e0e1dd;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background: none;
+    width: 80%;
+    max-width: 800px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(152, 255, 152, 0.3);
+}
+
+.animate-load {
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title {
+    font-size: 2.5em;
+    color: #00ffff;
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+}
+
+.title:hover {
+    color: #98ff98;
+}
+
+.dashboard {
+    background: none; /* Remove the black box around both sections */
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.squircle-box {
+    background: none; /* This was already set to none, but inline style overrides it */
+    border-radius: 20px;
+    padding: 15px;
+    margin: 10px auto;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.squircle-box h2 {
+    font-size: 1.5em;
+    margin: 0 0 10px 0;
+    color: #e0e1dd;
+    transition: color 0.3s ease;
+}
+
+.squircle-box span {
+    font-size: 2.2em;
+    color: #00ffff;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect for squircle boxes */
+.hoverable {
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.hoverable:hover {
+    transform: translateY(-5px);
+    background: #2c3e50;
+}
+
+.hoverable:hover h2 {
+    color: #98ff98;
+}
+
+.hoverable:hover span {
+    color: #98ff98;
+}
+
+/* Progress bar styling */
+.progress-container {
+    width: 80%;
+    margin: 10px auto 0;
+    background: #0d1b2a;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #00ffff; /* Cyan progress */
+    width: 100%; /* Starts full */
+    transition: width 1s linear; /* Smooth reverse animation */
+}
+
+/* Period container specific hover (unchanged from previous) */
+.period-container {
+    transition: transform 0.3s ease, width 0.3s ease, max-width 0.3s ease;
+}
+
+.edit-form label {
+    display: block;
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+.edit-form input[type="time"] {
+    background: #1b263b;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    padding: 5px;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.btn {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 1.2em;
+    background: #00ffff;
+    color: #0d1b2a;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.btn:hover {
+    background: #98ff98;
+    color: #0d1b2a;
+    transform: scale(1.1);
+}
+
+.emergency-btn {
+    background: #ff0000;
+}
+
+.emergency-btn:hover {
+    background: #ff5555;
+}
+
+.edit-btn, .exam-btn, .save-btn, .back-btn, .start-exam-btn {
+    background: #00ffff;
+}
+
+.edit-btn:hover, .exam-btn:hover, .save-btn:hover, .back-btn:hover, .start-exam-btn:hover {
+    background: #98ff98;
+}
